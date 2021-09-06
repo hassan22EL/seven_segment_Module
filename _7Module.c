@@ -95,10 +95,11 @@ _7MODULE_State LEDTested(char Digit) {
     return LEDTest;
 }
 
-_7MODULE_State DataSet() {
+_7MODULE_State DataSet(int Data) {
     PORTD |= 0x04;
     PORTD &= ~0x01;
     PORTD &= ~0x02;
+    Tigger_Function(Data);
     OUTbits.OUT = 0x04; //Data is displayed
     return SETData;
 
@@ -118,19 +119,19 @@ _7MODULE_Events ReadEvent() {
     return event;
 }
 
-_7MODULE_State FSM(_7MODULE_State NextState, _7MODULE_Events event, char Digit) {
+_7MODULE_State FSM(_7MODULE_State NextState, _7MODULE_Events event, char Digit, int Data) {
     switch (NextState) {
         case Count:
-            NextState = EventAction(event, NextState, Digit);
+            NextState = EventAction(event, NextState, Digit, Data);
             break;
         case LEDTest:
-            NextState = EventAction(event, NextState, Digit);
+            NextState = EventAction(event, NextState, Digit, Data);
             break;
         case SETData:
-            NextState = EventAction(event, NextState, Digit);
+            NextState = EventAction(event, NextState, Digit, Data);
             break;
         case IDLE:
-            NextState = EventAction(event, NextState, Digit);
+            NextState = EventAction(event, NextState, Digit, Data);
         default:
             break;
     }
@@ -138,7 +139,7 @@ _7MODULE_State FSM(_7MODULE_State NextState, _7MODULE_Events event, char Digit) 
 
 }
 
-_7MODULE_State EventAction(_7MODULE_Events event, _7MODULE_State NextState, char Digit) {
+_7MODULE_State EventAction(_7MODULE_Events event, _7MODULE_State NextState, char Digit, int Data) {
     switch (event) {
         case count:
             NextState = Counting(Digit);
@@ -147,7 +148,7 @@ _7MODULE_State EventAction(_7MODULE_Events event, _7MODULE_State NextState, char
             NextState = LEDTested(Digit);
             break;
         case set:
-            NextState = DataSet();
+            NextState = DataSet(Data);
             break;
         case idel:
             NextState = IDELS();
@@ -160,83 +161,236 @@ _7MODULE_State EventAction(_7MODULE_Events event, _7MODULE_State NextState, char
 }
 
 void Counter(char Digit) {
-    for (int i = 0; i < 10; i++) {
-        switch (Digit) {
-            case 0:
-                PORTC = DigitData[i];
-                PORTD |= 0x78; //Disable  all Digit 
-                _delay_ms(5);
-                PORTD &= ~0x08; //Enable Digit 0
-                break;
-            case 1:
-                PORTC = DigitData[i];
-                PORTD |= 0x78; //Disable  all Digit  
-                _delay_ms(5);
-                PORTD &= ~0x10; //Enable Digit 1
-                break;
-            case 2:
-                PORTC = DigitData[i];
-                PORTD |= 0x78; //Disable  all Digit 
-                _delay_ms(5);
-                PORTD &= ~0x20; //Enable Digit 2
-                break;
-            case 3:
-                PORTC = DigitData[i];
-                PORTD |= 0x78; //Disable  all Digit 
-                _delay_ms(5);
-                PORTD &= ~0x40; //Enable Digit 3
-                break;
+    int index = 0;
+    switch (Digit) {
+        case 0:
+            for (int delay = 0; delay < 10; delay++) {
+                for (int i = 0; i < 50; i++) {
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x40;
+                    _delay_ms(1);
+                    PORTD |= 0x40;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x20;
+                    _delay_ms(1);
+                    PORTD |= 0x20;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x10;
+                    _delay_ms(1);
+                    PORTD |= 0x10;
+                    PORTC = DigitData[delay];
+                    PORTD &= ~0x08;
+                    _delay_ms(1);
+                    PORTD |= 0x08;
+                }
+            }
+            break;
+        case 1:
 
-        }
-        _delay_ms(200);
+            for (int delay = 0; delay < 10; delay++) {
+                for (int i = 0; i < 50; i++) {
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x40;
+                    _delay_ms(1);
+                    PORTD |= 0x40;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x20;
+                    _delay_ms(1);
+                    PORTD |= 0x20;
+                    PORTC = DigitData[delay];
+                    PORTD &= ~0x10;
+                    _delay_ms(1);
+                    PORTD |= 0x10;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x08;
+                    _delay_ms(1);
+                    PORTD |= 0x08;
+                }
+
+            }
+            break;
+        case 2:
+            for (int delay = 0; delay < 10; delay++) {
+                for (int i = 0; i < 50; i++) {
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x40;
+                    _delay_ms(1);
+                    PORTD |= 0x40;
+                    PORTC = DigitData[delay];
+                    PORTD &= ~0x20;
+                    _delay_ms(1);
+                    PORTD |= 0x20;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x10;
+                    _delay_ms(1);
+                    PORTD |= 0x10;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x08;
+                    _delay_ms(1);
+                    PORTD |= 0x08;
+                }
+
+
+            }
+            break;
+        case 3:
+            for (int delay = 0; delay < 10; delay++) {
+                for (int i = 0; i < 50; i++) {
+                    PORTC = DigitData[delay];
+                    PORTD &= ~0x40;
+                    _delay_ms(1);
+                    PORTD |= 0x40;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x20;
+                    _delay_ms(1);
+                    PORTD |= 0x20;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x10;
+                    _delay_ms(1);
+                    PORTD |= 0x10;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x08;
+                    _delay_ms(1);
+                    PORTD |= 0x08;
+                }
+
+
+            }
+            break;
+
+
     }
-
 }
+
 void InterFacingPORT();
 
 void counterLED(char Digit) {
-    for (int i = 0; i < 7; i++) {
-        switch (Digit) {
-            case 0:
-                PORTC = LEDData[i];
-                PORTD |= 0x78; //Disable  all Digit 
-                _delay_ms(5);
-                PORTD &= ~0x08; //Enable Digit 0
-                break;
-            case 1:
-                PORTC = LEDData[i];
-                PORTD |= 0x78; //Disable  all Digit  
-                _delay_ms(5);
-                PORTD &= ~0x10; //Enable Digit 1
-                break;
-            case 2:
-                PORTC = LEDData[i];
-                PORTD |= 0x78; //Disable  all Digit 
-                _delay_ms(5);
-                PORTD &= ~0x20; //Enable Digit 2
-                break;
-            case 3:
-                PORTC = LEDData[i];
-                PORTD |= 0x78; //Disable  all Digit 
-                _delay_ms(5);
-                PORTD &= ~0x40; //Enable Digit 3
-                break;
-        }
-        _delay_ms(200);
+    int index = 0;
+    switch (Digit) {
+        case 0:
+            for (int delay = 0; delay < 7; delay++) {
+                for (int i = 0; i < 50; i++) {
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x40;
+                    _delay_ms(1);
+                    PORTD |= 0x40;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x20;
+                    _delay_ms(1);
+                    PORTD |= 0x20;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x10;
+                    _delay_ms(1);
+                    PORTD |= 0x10;
+                    PORTC = LEDData[delay];
+                    PORTD &= ~0x08;
+                    _delay_ms(1);
+                    PORTD |= 0x08;
+                }
+
+
+
+            }
+            break;
+        case 1:
+            for (int delay = 0; delay < 7; delay++) {
+                for (int i = 0; i < 50; i++) {
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x40;
+                    _delay_ms(1);
+                    PORTD |= 0x40;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x20;
+                    _delay_ms(1);
+                    PORTD |= 0x20;
+                    PORTC = LEDData[delay];
+                    PORTD &= ~0x10;
+                    _delay_ms(1);
+                    PORTD |= 0x10;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x08;
+                    _delay_ms(1);
+                    PORTD |= 0x08;
+                }
+            }
+            break;
+        case 2:
+            for (int delay = 0; delay < 7; delay++) {
+                for (int i = 0; i < 70; i++) {
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x40;
+                    _delay_ms(1);
+                    PORTD |= 0x40;
+                    PORTC = LEDData[delay];
+                    PORTD &= ~0x20;
+                    _delay_ms(1);
+                    PORTD |= 0x20;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x10;
+                    _delay_ms(1);
+                    PORTD |= 0x10;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x08;
+                    _delay_ms(1);
+                    PORTD |= 0x08;
+                }
+            }
+            break;
+        case 3:
+            for (int delay = 0; delay < 7; delay++) {
+                for (int i = 0; i < 70; i++) {
+                    PORTC = LEDData[delay];
+                    PORTD &= ~0x40;
+                    _delay_ms(1);
+                    PORTD |= 0x40;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x20;
+                    _delay_ms(1);
+                    PORTD |= 0x20;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x10;
+                    _delay_ms(1);
+                    PORTD |= 0x10;
+                    PORTC = DigitData[0];
+                    PORTD &= ~0x08;
+                    _delay_ms(1);
+                    PORTD |= 0x08;
+                }
+
+            }
+            break;
+
+
     }
 }
 
 void Tigger_Function(int Data) {
     int a = Data / 1000; // Digit 1000's 
-    int b = (Data / 100) % 10; // Digit 100's
-    int c = (Data / 10) % 10; // Digit 10's 
+    int b = (Data % 1000) / 100; // Digit 100's
+    int c = (Data % 100) / 10; // Digit 10's 
     int d = Data % 10; //Digit 1's
+    PORTC = DigitData[a];
+    PORTD &= ~0x40;
+    _delay_ms(1);
+    PORTD |= 0x40;
+    PORTC = DigitData[b];
+    PORTD &= ~0x20;
+    _delay_ms(1);
+    PORTD |= 0x20;
+    PORTC = DigitData[c];
+    PORTD &= ~0x10;
+    _delay_ms(1);
+    PORTD |= 0x10;
+    PORTC = DigitData[d];
+    PORTD &= ~0x08;
+    _delay_ms(1);
+    PORTD |= 0x08;
 
 }
 
-void InterfacingModule(_7MODULE_State NextState, _7MODULE_Events event, char NDigit) {
+void InterfacingModule(_7MODULE_State NextState, _7MODULE_Events event, char NDigit, int Data) {
     for (int i = 0; i < NDigit; i++) {
-        NextState = FSM(NextState, event, i);
+        NextState = FSM(NextState, event, i, Data);
     }
 }
 

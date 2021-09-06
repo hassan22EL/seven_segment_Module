@@ -48,6 +48,11 @@ typedef union {
     unsigned char Databits;
 } MOUDLEData_t;
 
+#define Digit0  PD3;
+#define Digit1  PD4;
+#define Digit3  PD5;
+#define Digit4  PD6;
+
 typedef union {
 
     struct {
@@ -117,17 +122,17 @@ bool StartSetData();
 bool StartLEDTEST();
 void InterFacingPORT();
 void Counter(char Digit);
-void counterLED(char Digit); 
+void counterLED(char Digit);
 void Tigger_Function(int Data);
-void InterfacingModule(_7MODULE_State NextState, _7MODULE_Events event ,  char  NDigit);
+void InterfacingModule(_7MODULE_State NextState, _7MODULE_Events event, char NDigit, int Data);
 void selectDigit(char Digit);
 _7MODULE_State IDELS();
 _7MODULE_State Counting(char Digit);
 _7MODULE_State LEDTested(char Digit);
-_7MODULE_State DataSet();
+_7MODULE_State DataSet(int Data);
 _7MODULE_Events ReadEvent();
-_7MODULE_State EventAction(_7MODULE_Events event, _7MODULE_State NextState ,char Digit);
-_7MODULE_State FSM(_7MODULE_State NextState, _7MODULE_Events event ,char Digit);
+_7MODULE_State EventAction(_7MODULE_Events event, _7MODULE_State NextState, char Digit, int Data);
+_7MODULE_State FSM(_7MODULE_State NextState, _7MODULE_Events event, char Digit, int Data);
 
 
 #endif	/* XC_7MODULE_H */
